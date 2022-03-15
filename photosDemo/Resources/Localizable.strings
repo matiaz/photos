@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  photosDemo
+
+  Created by dmatiaz on 14/3/22.
+  
+*/
+
+"Album Id:" = "Album Id:";
+"Identifier:" = "Identifier:";
+"Images" = "Images";
+"Pull to Refresh" = "Pull to Refresh";
