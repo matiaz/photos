@@ -8,10 +8,8 @@
 import UIKit
 
 class DetailScreenViewController: UIViewController {
-
     static var identifier: String { return String(describing: self) }
     static var storyboard: String = "DetailScreen"
-
     // Outlets
     @IBOutlet weak var backgroundImageView: UIImageView!
     // Properties
@@ -22,6 +20,7 @@ class DetailScreenViewController: UIViewController {
         setup()
     }
 
+    /// setup the view controller's ui
     private func setup() {
         // ImageView Setup
         backgroundImageView.contentMode = .scaleAspectFit

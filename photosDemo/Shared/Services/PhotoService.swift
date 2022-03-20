@@ -9,9 +9,10 @@ import Foundation
 import Alamofire
 
 final class PhotoService {
-
     private let photosURL = "https://jsonplaceholder.typicode.com/photos"
 
+    /// gets the photos from the api endpoint
+    /// - Parameter completion: a completion block with the result of the endpoint and or errors
     func getPhotos(_ completion: @escaping RequestCompletion) {
         guard let photosEndpoint = URL(string: photosURL) else { return }
         AF.request(photosEndpoint).response { response in

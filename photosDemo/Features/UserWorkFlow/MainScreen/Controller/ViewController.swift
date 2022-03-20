@@ -23,6 +23,7 @@ class ViewController: UIViewController {
         setup()
     }
 
+    /// setup the view controller's ui
     private func setup() {
         // ViewModel Setup
         viewModel = MainViewModel(service: PhotoService())
@@ -31,8 +32,8 @@ class ViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Images".localized
         // TableView Setup
-        tableView.delegate = self
-        tableView.dataSource = self
+        tableView.delegate = viewModel.photosTableViewManager
+        tableView.dataSource = viewModel.photosTableViewManager
         tableView.register(ImageTableViewCell.nib, forCellReuseIdentifier: ImageTableViewCell.identifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 90
@@ -41,52 +42,33 @@ class ViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(refreshPhotos), for: .valueChanged)
         tableView.addSubview(refreshControl)
         // Get Photos
-        viewModel.getPhotos(on: tableView)
+        viewModel.getPhotos()
     }
 
+    /// UIRefreshControl method to refresh the data
+    /// - Parameter refreshControl: default UIRefreshControl
     @objc private func refreshPhotos(_ refreshControl: UIRefreshControl) {
         refreshControl.beginRefreshing()
-        viewModel.getPhotos(on: tableView)
-    }
-
-    private func showDetailScreenWith(url: String) {
-        let storyboard = UIStoryboard(name: DetailScreenViewController.storyboard, bundle: nil)
-        if let viewController = storyboard.instantiateViewController(withIdentifier: DetailScreenViewController.identifier) as? DetailScreenViewController {
-            viewController.url = url
-            navigationController?.pushViewController(viewController, animated: true)
-        }
-    }
-}
-
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.photos.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let photoCell = tableView.dequeueReusableCell(withIdentifier: ImageTableViewCell.identifier) as! ImageTableViewCell
-        let photo = viewModel.photos[indexPath.row]
-        photoCell.loadInformation(photo)
-        return photoCell
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPhoto = viewModel.photos[indexPath.row]
-        if let url = selectedPhoto.url {
-            showDetailScreenWith(url: url)
-        }
+        viewModel.getPhotos()
     }
 }
 
 extension ViewController: MainViewModelDelegate {
+
+    /// a viewmodel's delegate method
     func didFinishContentUpdate() {
         DispatchQueue.main.async { [weak self] in
             self?.refreshControl.endRefreshing()
             self?.tableView.reloadData()
+        }
+    }
+
+    /// a viewmodel's delegate method
+    func showDetailScreenWith(url: String) {
+        let storyboard = UIStoryboard(name: DetailScreenViewController.storyboard, bundle: nil)
+        if let viewController = storyboard.instantiateViewController(withIdentifier: DetailScreenViewController.identifier) as? DetailScreenViewController {
+            viewController.url = url
+            navigationController?.pushViewController(viewController, animated: true)
         }
     }
 }
